@@ -1,0 +1,783 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>CampusMove AI — Project Review & Technical Specification</title>
+<style>
+  @page {
+    size: A4;
+    margin: 18mm 16mm;
+  }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    color: #1e293b;
+    background: #ffffff;
+    line-height: 1.55;
+    font-size: 10pt;
+    padding: 0;
+    margin: 0;
+  }
+  h1 {
+    font-size: 18pt;
+    color: #0f172a;
+    border-bottom: 2.5px solid #2563eb;
+    padding-bottom: 6px;
+    margin-top: 0;
+    margin-bottom: 8px;
+  }
+  h2 {
+    font-size: 13pt;
+    color: #1e40af;
+    border-bottom: 1.5px solid #e2e8f0;
+    padding-bottom: 4px;
+    margin-top: 20px;
+    margin-bottom: 8px;
+    page-break-after: avoid;
+  }
+  h3 {
+    font-size: 11pt;
+    color: #0f172a;
+    margin-top: 14px;
+    margin-bottom: 6px;
+    page-break-after: avoid;
+  }
+  p {
+    margin: 0 0 8px 0;
+  }
+  ul, ol {
+    margin: 0 0 10px 0;
+    padding-left: 20px;
+  }
+  li {
+    margin-bottom: 3px;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 12px 0 16px 0;
+    font-size: 8.5pt;
+    page-break-inside: auto;
+  }
+  tr {
+    page-break-inside: avoid;
+    page-break-after: auto;
+  }
+  thead {
+    display: table-header-group;
+  }
+  th {
+    background-color: #f1f5f9;
+    color: #0f172a;
+    font-weight: 700;
+    text-align: left;
+    padding: 7px 9px;
+    border: 1px solid #cbd5e1;
+  }
+  td {
+    padding: 6px 9px;
+    border: 1px solid #e2e8f0;
+    vertical-align: top;
+  }
+  tbody tr:nth-child(even) {
+    background-color: #f8fafc;
+  }
+  blockquote {
+    margin: 6px 0 12px 0;
+    padding: 7px 12px;
+    background-color: #eff6ff;
+    border-left: 3.5px solid #3b82f6;
+    color: #1e3a8a;
+    font-style: normal;
+    border-radius: 0 5px 5px 0;
+    page-break-inside: avoid;
+  }
+  code {
+    font-family: Consolas, 'Courier New', monospace;
+    font-size: 8.5pt;
+    background: #f1f5f9;
+    padding: 1.5px 4px;
+    border-radius: 3px;
+    color: #0f172a;
+  }
+  pre {
+    background: #0f172a;
+    color: #f8fafc;
+    padding: 10px 12px;
+    border-radius: 5px;
+    overflow-x: auto;
+    font-size: 8pt;
+    line-height: 1.4;
+    margin: 8px 0 12px 0;
+    page-break-inside: avoid;
+  }
+  pre code {
+    background: transparent;
+    color: inherit;
+    padding: 0;
+  }
+  hr {
+    border: none;
+    border-top: 1px solid #e2e8f0;
+    margin: 16px 0;
+  }
+  strong {
+    color: #0f172a;
+  }
+</style>
+</head>
+<body>
+<h1>CampusMove AI — Comprehensive Project Review &amp; Technical Specification</h1>
+<p><strong>Smart College Shuttle Transit &amp; Real-Time Demand Management System</strong><br />
+<em>Specialized Implementation for Vellore Institute of Technology (VIT), Vellore Campus</em></p>
+<hr />
+<h2>1. Executive Summary &amp; Problem Statement</h2>
+<h3>1.1 The Campus Transit Challenge</h3>
+<p>University campuses operating internal shuttle systems (such as the sprawling <strong>VIT Vellore</strong> campus) face severe transit bottlenecks during peak hours:
+* <strong>"Phantom Shuttles" &amp; Unreliable ETAs</strong>: Fixed timetables disintegrate when class dispersal floods routes. Students have no visibility into vehicle locations or arrival countdowns.
+* <strong>Overcrowding &amp; Pass-By Frustration</strong>: Shuttles arrive at stops already 100% full. Waiting students are passed by, having waited needlessly.
+* <strong>Lagging &amp; Reactive Dispatching</strong>: Transport supervisors dispatch backup vehicles only after student queues have backed up, lacking predictive demand insights.
+* <strong>Substantial Inter-Block Walking Distances</strong>: Walking between distant residential towers and academic zones (e.g., MH Q-T towers to Technology Tower or SJT) can take 15–20 minutes. Students lack real-time distance and time comparisons to decide whether to walk or wait.</p>
+<h3>1.2 The CampusMove AI Solution</h3>
+<p><strong>CampusMove AI</strong> is an enterprise-grade, full-stack campus transit and demand management platform engineered to deliver:
+1. <strong>Live GPS Tracking &amp; Predictive ETAs</strong> overlaid onto an unwatermarked, high-performance OpenStreetMap canvas of the VIT Vellore campus.
+2. <strong>Dynamic 4-Tier Occupancy Sensing</strong> with automatic recommendations for subsequent alternative shuttles when a bus is full.
+3. <strong>Student Boarding Pre-Registration</strong> to capture true stop demand <em>before</em> students physically crowd the stop.
+4. <strong>Explainable AI Dispatch Advisory Engine</strong> that recommends spare vehicle deployments with three explicit, auditable criteria.
+5. <strong>VIT Vellore Block Directory</strong> integrating all 22+ Men's &amp; Ladies' Hostel blocks (MH A–T, LH A–J, RGT, Annexes) with official landlines and emails.</p>
+<hr />
+<h2>2. Technology Stack &amp; Architectural Specifications</h2>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">System Layer</th>
+<th style="text-align: left;">Technology / Framework</th>
+<th style="text-align: left;">Version</th>
+<th style="text-align: left;">Technical Purpose &amp; Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><strong>Frontend Framework</strong></td>
+<td style="text-align: left;"><strong>React.js (Vite)</strong></td>
+<td style="text-align: left;"><code>18.3.1</code> (Vite <code>5.4.21</code>)</td>
+<td style="text-align: left;">Component-driven reactive Single Page Application (SPA)</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Frontend Styling</strong></td>
+<td style="text-align: left;"><strong>Vanilla CSS + Glassmorphism</strong></td>
+<td style="text-align: left;">Custom CSS3 Tokens</td>
+<td style="text-align: left;">Ultra-modern dark UI, backdrop filters, vibrant color coding</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Iconography</strong></td>
+<td style="text-align: left;"><strong>Lucide React</strong></td>
+<td style="text-align: left;"><code>^0.344.0</code></td>
+<td style="text-align: left;">Lightweight SVG icons for intuitive transit dashboards</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Mapping Engine (GIS)</strong></td>
+<td style="text-align: left;"><strong>Leaflet.js + React-Leaflet</strong></td>
+<td style="text-align: left;"><code>1.9.4</code> / <code>4.2.1</code></td>
+<td style="text-align: left;">Zero-watermark Leaflet canvas with OpenStreetMap tiles</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Backend Framework</strong></td>
+<td style="text-align: left;"><strong>FastAPI (Python)</strong></td>
+<td style="text-align: left;"><code>0.110.0</code> (Python <code>3.10</code>)</td>
+<td style="text-align: left;">High-concurrency asynchronous REST &amp; WebSocket framework</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>ASGI Server</strong></td>
+<td style="text-align: left;"><strong>Uvicorn</strong></td>
+<td style="text-align: left;"><code>0.28.0</code></td>
+<td style="text-align: left;">Asynchronous production-grade server</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Database &amp; ORM</strong></td>
+<td style="text-align: left;"><strong>SQLite + SQLAlchemy</strong></td>
+<td style="text-align: left;"><code>2.0.28</code></td>
+<td style="text-align: left;">Relational storage for stops, routes, vehicles, trips, and audit trails</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Data Validation</strong></td>
+<td style="text-align: left;"><strong>Pydantic</strong></td>
+<td style="text-align: left;"><code>2.6.4</code></td>
+<td style="text-align: left;">Strict schema validation for requests and responses</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Real-Time Duplex</strong></td>
+<td style="text-align: left;"><strong>Native WebSockets</strong></td>
+<td style="text-align: left;">FastAPI WebSocket</td>
+<td style="text-align: left;">Live bi-directional broadcast of moving vehicles and ETAs</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Testing Suite</strong></td>
+<td style="text-align: left;"><strong>Pytest + TestClient</strong></td>
+<td style="text-align: left;"><code>8.1.1</code></td>
+<td style="text-align: left;">9 automated end-to-end acceptance tests (100% pass)</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2>3. High-Level System Architecture</h2>
+<pre><code class="language-mermaid">graph TD
+    subgraph &quot;Client Layer (React 18 + Leaflet)&quot;
+        A[Student Rider View]
+        B[Driver Tap Console]
+        C[Admin Fleet Hub]
+        D[Analytics &amp; MAE Dashboard]
+    end
+
+    subgraph &quot;Network Protocols&quot;
+        REST[HTTP / REST API Polling &amp; Actions]
+        WS[Duplex WebSockets /ws/live]
+    end
+
+    subgraph &quot;Backend Application Layer (FastAPI)&quot;
+        R[API Routers: Stops, Trips, Admin, Sim]
+        WM[WebSocket Broadcast Manager]
+
+        subgraph &quot;Core Algorithmic Services&quot;
+            S1[ETAService: Haversine &amp; Segment Speeds]
+            S2[OccupancyService: 4-Tier Verification]
+            S3[DemandService: Pre-Registration Intent]
+            S4[DispatchAdvisoryService: Explainable Engine]
+            S5[SimulationEngine: Autonomous Fleet Loop]
+        end
+    end
+
+    subgraph &quot;Persistence Layer&quot;
+        DB[(SQLite Database - campusmove.db)]
+    end
+
+    A --&gt; REST
+    B --&gt; REST
+    C --&gt; REST
+    D --&gt; REST
+
+    REST --&gt; R
+    WS &lt;--&gt; WM
+
+    R --&gt; S1
+    R --&gt; S2
+    R --&gt; S3
+    R --&gt; S4
+    R --&gt; S5
+
+    WM &lt;--&gt; S5
+
+    S1 --&gt; DB
+    S2 --&gt; DB
+    S3 --&gt; DB
+    S4 --&gt; DB
+    S5 --&gt; DB
+
+    WM --&gt; A
+    WM --&gt; B
+    WM --&gt; C
+</code></pre>
+<hr />
+<h2>4. Complete REST &amp; WebSocket API Specification</h2>
+<h3>4.1 Campus Stops &amp; Real-Time Arrivals</h3>
+<ul>
+<li><strong><code>GET /api/stops</code></strong></li>
+<li><em>Description</em>: Retrieves all 10 registered VIT Vellore transit stops with geographic coordinates and sequence hints.</li>
+<li><em>Response</em>: Array of stop objects (<code>id</code>, <code>name</code>, <code>latitude</code>, <code>longitude</code>, <code>sequence_hint</code>).</li>
+<li><strong><code>GET /api/stops/hostel-directory</code></strong></li>
+<li><em>Description</em>: Returns complete directory of VIT Vellore blocks (MH A through T, LH A through J, RGT, Annexes) clustered by transit stops, including building names, landlines, and emails.</li>
+<li><strong><code>GET /api/stops/{stop_id}/arrivals</code></strong></li>
+<li><em>Description</em>: Returns ordered list of upcoming shuttles arriving at <code>stop_id</code>.</li>
+<li><em>Key Attributes</em>: <code>eta_seconds</code>, <code>eta_formatted</code>, <code>distance_meters</code>, <code>occupancy_category</code>, <code>is_stale</code>, <code>is_alternate</code>.</li>
+</ul>
+<h3>4.2 Fleet Telemetry &amp; Driver Controls</h3>
+<ul>
+<li><strong><code>GET /api/vehicles</code></strong></li>
+<li><em>Description</em>: Returns live operational telemetry for all campus shuttles.</li>
+<li><em>Key Attributes</em>: <code>id</code>, <code>label</code>, <code>lat</code>, <code>lon</code>, <code>speed_kmh</code>, <code>status</code>, <code>passenger_count</code>, <code>capacity</code>, <code>occupancy_category</code>, <code>is_stale</code>.</li>
+<li><strong><code>POST /api/vehicles/{id}/telemetry</code></strong></li>
+<li><em>Description</em>: Ingests raw GPS updates from on-vehicle tracking hardware or driver mobile devices.</li>
+<li><em>Payload</em>: <code>{ "latitude": float, "longitude": float, "speed_kmh": float }</code></li>
+<li><strong><code>POST /api/trips/{trip_id}/occupancy-event</code></strong></li>
+<li><em>Description</em>: Records verified boarding or deboarding events from driver terminal.</li>
+<li><em>Payload</em>: <code>{ "event_type": "tap_in" | "tap_out" | "manual_override", "count": int }</code></li>
+</ul>
+<h3>4.3 Student Pre-Registration (Demand Prediction)</h3>
+<ul>
+<li><strong><code>POST /api/demand/intent</code></strong></li>
+<li><em>Description</em>: Submits student boarding intent at an origin stop for a target destination block.</li>
+<li><em>Payload</em>: <code>{ "user_id": string, "origin_stop_id": string, "dest_stop_id": string }</code></li>
+<li><strong><code>GET /api/admin/demand</code></strong></li>
+<li><em>Description</em>: Aggregates current physical queue plus pre-registered student intent per stop.</li>
+</ul>
+<h3>4.4 Explainable Admin Dispatch &amp; Audit Logging</h3>
+<ul>
+<li><strong><code>GET /api/admin/recommendations</code></strong></li>
+<li><em>Description</em>: Returns AI-recommended dispatch advisories when demand exceeds capacity thresholds.</li>
+<li><em>Payload Output</em>: <code>route_id</code>, <code>vehicle_id</code>, <code>action_type</code>, <code>explanation_factors</code> (3 auditable criteria).</li>
+<li><strong><code>POST /api/admin/recommendations/{id}/action</code></strong></li>
+<li><em>Description</em>: Records human-in-the-loop admin decision (<code>accept</code>, <code>override</code>, <code>dismiss</code>).</li>
+<li><strong><code>GET /api/admin/audit-logs</code></strong></li>
+<li><em>Description</em>: Provides an immutable audit trail of all dispatch decisions with timestamps and operator IDs.</li>
+</ul>
+<h3>4.5 Live WebSocket Broadcast</h3>
+<ul>
+<li><strong><code>WS /ws/live</code></strong></li>
+<li><em>Description</em>: Bi-directional WebSocket stream broadcasting fleet state updates every tick.</li>
+<li><em>Message Payload</em>:
+    <code>json
+    {
+      "type": "FLEET_UPDATE",
+      "timestamp": "2026-10-23T06:30:00Z",
+      "vehicles": [
+        {
+          "id": "shuttle-1",
+          "label": "VIT MH Q-S Express",
+          "lat": 12.9752,
+          "lon": 79.1646,
+          "occupancy_category": "Available",
+          "available_seats": 26,
+          "is_stale": false
+        }
+      ]
+    }</code></li>
+</ul>
+<hr />
+<h2>5. Core Mathematical Models &amp; Algorithmic Formulations</h2>
+<h3>5.1 Great-Circle Distance (Haversine Formula)</h3>
+<p>To measure true inter-block distances and shuttle-to-stop spatial gaps along the Earth's curvature:
+$$\Delta\phi = \phi_2 - \phi_1, \quad \Delta\lambda = \lambda_2 - \lambda_1$$
+$$a = \sin^2\left(\frac{\Delta\phi}{2}\right) + \cos(\phi_1)\cos(\phi_2)\sin^2\left(\frac{\Delta\lambda}{2}\right)$$
+$$d = 2 \cdot R \cdot \operatorname{atan2}\left(\sqrt{a}, \sqrt{1 - a}\right) \quad (\text{where } R = 6,371,000 \text{ m})$$</p>
+<h3>5.2 Segment-Based Predictive ETA &amp; Stale GPS Fallback</h3>
+<p>Rather than using naive Euclidean line speed, ETA sums segment travel times based on historical velocities:
+$$\text{ETA}<em>{\text{seconds}} = \sum</em>{s \in \text{Segments}} \frac{\text{Distance}<em>s}{\bar{v}_s} + \sum</em>{k \in \text{Intermediate Stops}} t_{\text{dwell_k}}$$
+* <strong>Stale Telemetry Threshold</strong>: If $(T_{\text{now}} - T_{\text{last_ping}}) &gt; 30\text{ seconds}$, the shuttle is marked <code>is_stale = true</code>. The interface immediately flags the ETA as approximate to prevent student misguidance.</p>
+<h3>5.3 4-Tier Occupancy State Classification</h3>
+<p>$$\text{Occupancy Ratio } (r) = \frac{\text{Verified Passengers}}{\text{Total Seating Capacity}}$$
+* <strong>Available</strong> ($r &lt; 0.60$): Plentiful seating; students encouraged to board.
+* <strong>Filling</strong> ($0.60 \le r &lt; 0.85$): Seats filling steadily; boarding normal.
+* <strong>Nearly Full</strong> ($0.85 \le r &lt; 1.00$): Limited standing/seating room remaining.
+* <strong>Full</strong> ($r \ge 1.00$): Shuttle fully saturated.
+* <strong>Alternative Shuttle Rule</strong>: If the upcoming arrival is <strong>Full</strong>, the system automatically flags the following shuttle as <code>is_alternate = true</code>, revealing its ETA and open seating count to prevent crowding onto the full bus.</p>
+<h3>5.4 Explainable AI Dispatch Heuristic Rule Engine</h3>
+<p>The dispatch advisory engine triggers an alert only when all three verification criteria are satisfied:
+1. <strong>Demand Factor</strong>: Stop Queue Demand $\ge 80\%$ of single shuttle capacity.
+2. <strong>Capacity Deficit Factor</strong>: Projected arriving capacity within 10 minutes &lt; Waiting demand.
+3. <strong>Depot Availability Factor</strong>: Available spare shuttles in Katpadi transit depot &gt; 0.
+* <strong>Explainability Guarantee</strong>: Every generated advisory includes three plain-language justifications (e.g., <em>"Demand of 95 students exceeds threshold by 15; Arriving Shuttle 101 is already at full capacity; Spare Shuttle 104 is idling at Katpadi Depot"</em>).</p>
+<hr />
+<h2>6. VIT Vellore Campus Customization Details</h2>
+<h3>6.1 Geographical Alignment</h3>
+<ul>
+<li><strong>Campus Center</strong>: Katpadi, Vellore, Tamil Nadu (<code>12.9720° N, 79.1610° E</code>).</li>
+<li><strong>Campus Transit Perimeter</strong>: Covers South Gate 1 through the MGR Library, Technology Tower, Ladies' Hostel Quadrangle, Men's Hostel Quadrangle, and North High-Rise Towers (MH Q-T).</li>
+</ul>
+<h3>6.2 Clustered Transit Stops (Adjacent Blocks Grouped)</h3>
+<p>To optimize shuttle cycle time, adjacent blocks are clustered into dedicated stops:
+1. <strong><code>stop-vit-gate</code></strong>: VIT Main Gate 1 (Katpadi Road)
+2. <strong><code>stop-vit-mb</code></strong>: Dr. MGR Block (MB) &amp; Central Library
+3. <strong><code>stop-vit-tt</code></strong>: Technology Tower (TT Academic Block)
+4. <strong><code>stop-vit-lh-abcdef</code></strong>: LH A – F Blocks &amp; Food Park
+5. <strong><code>stop-vit-lh-ghj</code></strong>: LH G, H, J, RGT &amp; GH Annex
+6. <strong><code>stop-vit-mh-abcdef</code></strong>: MH A – F Blocks (Einstein, Ramanujam)
+7. <strong><code>stop-vit-mh-mnp</code></strong>: MH M, N, P Blocks (Darwin, Patel)
+8. <strong><code>stop-vit-mh-ghjkl</code></strong>: MH G – L Blocks (Darling Mess Hub)
+9. <strong><code>stop-vit-mh-qrst</code></strong>: MH Q, R, S, T High-Rise Towers (Vajpayee, Kalam)
+10. <strong><code>stop-vit-sjt</code></strong>: Silver Jubilee Tower (SJT Block)</p>
+<h3>6.3 Official Hostel Directory &amp; Direct Contact Wiring</h3>
+<p>All 22+ blocks include active telephone links (<code>tel:0416...</code>) and email links (<code>mailto:...</code>):</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Block Code</th>
+<th style="text-align: left;">Block Namesake</th>
+<th style="text-align: left;">Landline Number</th>
+<th style="text-align: left;">Official Email ID</th>
+<th style="text-align: left;">Clustered Stop</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><strong>MH A</strong></td>
+<td style="text-align: left;">ALBERT EINSTEIN</td>
+<td style="text-align: left;"><code>0416 220 2531</code></td>
+<td style="text-align: left;"><code>mhablock@vit.ac.in</code></td>
+<td style="text-align: left;">MH A–F Stop</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>MH B</strong></td>
+<td style="text-align: left;">SWAMI VIVEKANANDA</td>
+<td style="text-align: left;"><code>0416 220 2532</code></td>
+<td style="text-align: left;"><code>mhbblock@vit.ac.in</code></td>
+<td style="text-align: left;">MH A–F Stop</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>MH B Annex</strong></td>
+<td style="text-align: left;">SWAMI VIVEKANANDA B ANNEX</td>
+<td style="text-align: left;"><code>0416 220 2533</code></td>
+<td style="text-align: left;"><code>mhbannex@vit.ac.in</code></td>
+<td style="text-align: left;">MH A–F Stop</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>MH C</strong></td>
+<td style="text-align: left;">RABINDRANATH TAGORE</td>
+<td style="text-align: left;"><code>0416 220 2534</code></td>
+<td style="text-align: left;"><code>mhcblock@vit.ac.in</code></td>
+<td style="text-align: left;">MH A–F Stop</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>MH D</strong></td>
+<td style="text-align: left;">NELSON MANDELA</td>
+<td style="text-align: left;"><code>0416 220 2535</code></td>
+<td style="text-align: left;"><code>mhdblock@vit.ac.in</code></td>
+<td style="text-align: left;">MH A–F Stop</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>MH D Annex</strong></td>
+<td style="text-align: left;">NELSON MANDELA D ANNEX</td>
+<td style="text-align: left;"><code>0416 220 2536</code></td>
+<td style="text-align: left;"><code>mhdannex@vit.ac.in</code></td>
+<td style="text-align: left;">MH A–F Stop</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>MH E</strong></td>
+<td style="text-align: left;">SIR C.V. RAMAN</td>
+<td style="text-align: left;"><code>0416 220 2537</code></td>
+<td style="text-align: left;"><code>mheblock@vit.ac.in</code></td>
+<td style="text-align: left;">MH A–F Stop</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>MH F</strong></td>
+<td style="text-align: left;">RAMANUJAM</td>
+<td style="text-align: left;"><code>0416 220 2538</code></td>
+<td style="text-align: left;"><code>mhfblock@vit.ac.in</code></td>
+<td style="text-align: left;">MH A–F Stop</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>MH G</strong></td>
+<td style="text-align: left;">SOCRATES</td>
+<td style="text-align: left;"><code>0416 220 2539</code></td>
+<td style="text-align: left;"><code>mhgblock@vit.ac.in</code></td>
+<td style="text-align: left;">MH G–L Stop</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>MH H</strong></td>
+<td style="text-align: left;">JOHN F. KENNEDY</td>
+<td style="text-align: left;"><code>0416 220 2540</code></td>
+<td style="text-align: left;"><code>mhhblock@vit.ac.in</code></td>
+<td style="text-align: left;">MH G–L Stop</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>MH J</strong></td>
+<td style="text-align: left;">JOHN F. KENNEDY</td>
+<td style="text-align: left;"><code>0416 220 2541</code></td>
+<td style="text-align: left;"><code>mhjblock@vit.ac.in</code></td>
+<td style="text-align: left;">MH G–L Stop</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>MH K</strong></td>
+<td style="text-align: left;">Dr. SARVEPALLI RADHAKRISHNAN</td>
+<td style="text-align: left;"><code>0416 220 2542</code></td>
+<td style="text-align: left;"><code>mhkblock@vit.ac.in</code></td>
+<td style="text-align: left;">MH G–L Stop</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>MH L</strong></td>
+<td style="text-align: left;">NETAJI SUBHAS CHANDRA BOSE</td>
+<td style="text-align: left;"><code>0416 220 2543</code></td>
+<td style="text-align: left;"><code>mhlblock@vit.ac.in</code></td>
+<td style="text-align: left;">MH G–L Stop</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>MH M</strong></td>
+<td style="text-align: left;">QUAID-E-MILLAT MUHAMMED ISMAIL</td>
+<td style="text-align: left;"><code>0416 220 2544</code></td>
+<td style="text-align: left;"><code>mhmblock@vit.ac.in</code></td>
+<td style="text-align: left;">MH M–P Stop</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>MH M Annex</strong></td>
+<td style="text-align: left;">QUAID-E-MILLAT M ANNEX</td>
+<td style="text-align: left;"><code>0416 220 2545</code></td>
+<td style="text-align: left;"><code>mhmannexblock@vit.ac.in</code></td>
+<td style="text-align: left;">MH M–P Stop</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>MH N</strong></td>
+<td style="text-align: left;">CHARLES DARWIN</td>
+<td style="text-align: left;"><code>0416 220 2546</code></td>
+<td style="text-align: left;"><code>mhnblock@vit.ac.in</code></td>
+<td style="text-align: left;">MH M–P Stop</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>MH N Annex</strong></td>
+<td style="text-align: left;">CHARLES DARWIN N ANNEX</td>
+<td style="text-align: left;"><code>0416 220 2564</code></td>
+<td style="text-align: left;"><code>mhnannexblock@vit.ac.in</code></td>
+<td style="text-align: left;">MH M–P Stop</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>MH P</strong></td>
+<td style="text-align: left;">SARDAR PATEL</td>
+<td style="text-align: left;"><code>0416 220 2547</code></td>
+<td style="text-align: left;"><code>mhpblock@vit.ac.in</code></td>
+<td style="text-align: left;">MH M–P Stop</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>MH Q</strong></td>
+<td style="text-align: left;">VAJPAYEE BLOCK</td>
+<td style="text-align: left;"><code>0416 220 2548</code></td>
+<td style="text-align: left;"><code>mhqblock@vit.ac.in</code></td>
+<td style="text-align: left;">MH Q–T Stop</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>MH R</strong></td>
+<td style="text-align: left;">M. KARUNANIDHI BLOCK</td>
+<td style="text-align: left;"><code>0416 220 2549</code></td>
+<td style="text-align: left;"><code>mhrblock@vit.ac.in</code></td>
+<td style="text-align: left;">MH Q–T Stop</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>MH S</strong></td>
+<td style="text-align: left;">ABDUL KALAM BLOCK</td>
+<td style="text-align: left;"><code>0416 220 2550</code></td>
+<td style="text-align: left;"><code>mhsblock@vit.ac.in</code></td>
+<td style="text-align: left;">MH Q–T Stop</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>MH T</strong></td>
+<td style="text-align: left;">JAGADISH CHANDRA BOSE BLOCK</td>
+<td style="text-align: left;"><code>0416 220 2551</code></td>
+<td style="text-align: left;"><code>mhtblock@vit.ac.in</code></td>
+<td style="text-align: left;">MH Q–T Stop</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>LH A</strong></td>
+<td style="text-align: left;">LADIES HOSTEL A</td>
+<td style="text-align: left;"><code>0416 220 2669</code></td>
+<td style="text-align: left;"><code>lhablock@vit.ac.in</code></td>
+<td style="text-align: left;">LH A–F Stop</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>LH B</strong></td>
+<td style="text-align: left;">LADIES HOSTEL B</td>
+<td style="text-align: left;"><code>0416 220 2670</code></td>
+<td style="text-align: left;"><code>lhbblock@vit.ac.in</code></td>
+<td style="text-align: left;">LH A–F Stop</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>LH C</strong></td>
+<td style="text-align: left;">LADIES HOSTEL C</td>
+<td style="text-align: left;"><code>0416 220 2703</code></td>
+<td style="text-align: left;"><code>lhcblock@vit.ac.in</code></td>
+<td style="text-align: left;">LH A–F Stop</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>LH D</strong></td>
+<td style="text-align: left;">LADIES HOSTEL D</td>
+<td style="text-align: left;"><code>0416 220 2704</code></td>
+<td style="text-align: left;"><code>lhdblock@vit.ac.in</code></td>
+<td style="text-align: left;">LH A–F Stop</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>LH E</strong></td>
+<td style="text-align: left;">LADIES HOSTEL E</td>
+<td style="text-align: left;"><code>0416 220 2705</code></td>
+<td style="text-align: left;"><code>lheblock@vit.ac.in</code></td>
+<td style="text-align: left;">LH A–F Stop</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>LH F</strong></td>
+<td style="text-align: left;">LADIES HOSTEL F</td>
+<td style="text-align: left;"><code>0416 220 2706</code></td>
+<td style="text-align: left;"><code>lhfblock@vit.ac.in</code></td>
+<td style="text-align: left;">LH A–F Stop</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>LH G</strong></td>
+<td style="text-align: left;">LADIES HOSTEL G</td>
+<td style="text-align: left;"><code>0416 220 2892</code></td>
+<td style="text-align: left;"><code>lhgblock@vit.ac.in</code></td>
+<td style="text-align: left;">LH G–J Stop</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>LH H</strong></td>
+<td style="text-align: left;">LADIES HOSTEL H</td>
+<td style="text-align: left;"><code>0416 220 2894</code></td>
+<td style="text-align: left;"><code>lhhblock@vit.ac.in</code></td>
+<td style="text-align: left;">LH G–J Stop</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>LH J</strong></td>
+<td style="text-align: left;">LADIES HOSTEL J</td>
+<td style="text-align: left;"><code>0416 220 2896</code></td>
+<td style="text-align: left;"><code>lhjblock@vit.ac.in</code></td>
+<td style="text-align: left;">LH G–J Stop</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>RGT H</strong></td>
+<td style="text-align: left;">RGT HOSTEL TOWER</td>
+<td style="text-align: left;"><code>0416 220 5003</code></td>
+<td style="text-align: left;"><code>rgthblock@vit.ac.in</code></td>
+<td style="text-align: left;">LH G–J Stop</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>LH GH</strong></td>
+<td style="text-align: left;">LH GH (ANNEX)</td>
+<td style="text-align: left;"><code>0416 220 2244</code></td>
+<td style="text-align: left;"><code>lhghannex@vit.ac.in</code></td>
+<td style="text-align: left;">LH G–J Stop</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2>7. User Interface &amp; Feature Breakdown</h2>
+<h3>7.1 Student Rider View</h3>
+<ul>
+<li><strong>Live Interactive Map</strong>: Real VIT Vellore layout with custom color-coded shuttle markers showing live position, route trajectory, and passenger load.</li>
+<li><strong>ETA Countdown &amp; Freshness Indicator</strong>: Displays countdown to arrival; transitions to an amber badge if GPS pings exceed 30 seconds.</li>
+<li><strong>Alternative Shuttle Display</strong>: If the nearest bus is full, the system highlights the next empty shuttle to avoid passenger frustration.</li>
+<li><strong>Stop Block Contact Panel</strong>: Displays landlines and emails of all buildings corresponding to the currently selected boarding stop.</li>
+<li><strong>Searchable Block Directory Drawer</strong>: Slide-out drawer to search any block by code, building namesake, or landline extension.</li>
+<li><strong>Inter-Block Distance &amp; Walk/Ride Estimator</strong>: Dynamic calculation showing exact meters, walking time (at 4.5 km/h), and shuttle travel time (at 17 km/h).</li>
+</ul>
+<h3>7.2 Driver Console</h3>
+<ul>
+<li><strong>Digital Tap-In / Tap-Out</strong>: High-contrast, touch-optimized passenger counter for quick onboarding and deboarding.</li>
+<li><strong>Door State &amp; Manual Override</strong>: Allows drivers to toggle door sensors and correct passenger counts.</li>
+<li><strong>GPS Telemetry Simulator</strong>: Allows manual coordinate injection for testing dead zones and route deviations.</li>
+</ul>
+<h3>7.3 Admin Fleet &amp; Demand Hub</h3>
+<ul>
+<li><strong>Real-Time Fleet Grid</strong>: Live status of all vehicles, current route assignment, passenger counts, and telemetry health.</li>
+<li><strong>AI Dispatch Advisory</strong>: Displays recommendations to deploy spare vehicles, with three auditable explanation factors.</li>
+<li><strong>One-Click Human-in-the-Loop Actions</strong>: Dispatchers can approve, override, or dismiss recommendations.</li>
+<li><strong>Immutable Audit Trail</strong>: Logs all system events and operator decisions with timestamps and user IDs.</li>
+</ul>
+<h3>7.4 Analytics &amp; MAE View</h3>
+<ul>
+<li><strong>ETA Accuracy (Mean Absolute Error)</strong>: Tracks prediction performance over time:
+  $$\text{MAE} = \frac{1}{n} \sum_{i=1}^n |\text{ETA}<em>{\text{pred}} - \text{Time}</em>{\text{actual}}|$$</li>
+<li><strong>Hourly Demand Curves</strong>: Visualizes morning, afternoon, and evening peak demand patterns.</li>
+<li><strong>API Latency &amp; WebSocket Health</strong>: Real-time telemetry monitoring server response times.</li>
+</ul>
+<hr />
+<h2>8. Five Judge Presentation Scenarios (SRS Sec. 14)</h2>
+<ol>
+<li><strong>Scenario 1: Normal Loop</strong></li>
+<li>Regular fleet headway, balanced passenger loads, green/blue capacity badges.</li>
+<li><strong>Scenario 2: Crowd Spike (95 vs 80 Capacity)</strong></li>
+<li>Simulates class dismissal surge at MH Q-T / TT.</li>
+<li>Admin Hub flags critical demand and generates an explainable dispatch recommendation. Dispatching spare shuttle 104 resolves the deficit.</li>
+<li><strong>Scenario 3: Stale GPS (&gt;30s Delay)</strong></li>
+<li>Simulates telemetry dropouts.</li>
+<li>UI transitions from green "Fresh" to amber "Stale GPS — ETA approximate".</li>
+<li><strong>Scenario 4: Full Bus + Alternative</strong></li>
+<li>Upcoming shuttle reaches 100% capacity.</li>
+<li>System marks it as Full and surfaces the next empty bus as an alternative.</li>
+<li><strong>Scenario 5: Zero Spare Bus</strong></li>
+<li>All depot backup vehicles are deployed.</li>
+<li>Advisory intelligently switches to route short-turning rather than requesting unavailable resources.</li>
+</ol>
+<hr />
+<h2>9. Model Viva / Review Q&amp;A</h2>
+<p><strong>Q1: Why did you choose FastAPI over Flask or Django?</strong>  </p>
+<blockquote>
+<p><em>"FastAPI offers asynchronous execution out of the box, native WebSockets for high-frequency GPS telemetry, automated Pydantic schema validation, and significantly higher throughput with lower latency compared to synchronous WSGI frameworks."</em></p>
+</blockquote>
+<p><strong>Q2: How does your system calculate ETAs when GPS pings are delayed?</strong>  </p>
+<blockquote>
+<p><em>"We use historical segment-based speeds as a fallback. When telemetry exceeds a 30-second staleness threshold, the system flags the ETA as approximate to ensure complete transparency."</em></p>
+</blockquote>
+<p><strong>Q3: How do you prevent phantom wait times when a shuttle is full?</strong>  </p>
+<blockquote>
+<p><em>"Our OccupancyService monitors real-time capacity. When a bus reaches 100%, the backend flags it as Full and promotes the next sequential empty shuttle as a designated alternate."</em></p>
+</blockquote>
+<p><strong>Q4: What is the benefit of Student Boarding Intent over physical tap-ins?</strong>  </p>
+<blockquote>
+<p><em>"Tap-ins only capture students as they step onto the vehicle. Pre-registration gives fleet managers 5–10 minutes of predictive lead time, allowing proactive dispatching before queues overwhelm stops."</em></p>
+</blockquote>
+<p><strong>Q5: Why cluster adjacent hostel blocks rather than creating a stop for each?</strong>  </p>
+<blockquote>
+<p><em>"Stopping every 15 meters at each individual block causes severe campus congestion and increases round-trip cycle times. Clustered hubs optimize transit flow, while our directory provides exact block-level information."</em></p>
+</blockquote>
+<p><strong>Q6: How does the AI advisory engine ensure explainability?</strong>  </p>
+<blockquote>
+<p><em>"Rather than relying on an uninterpretable black-box model, our advisory engine evaluates three verifiable conditions: stop demand deficit, incoming capacity, and depot resource availability, providing clear rationales for every recommendation."</em></p>
+</blockquote>
+<p><strong>Q7: How do you ensure real-time consistency across concurrent users?</strong>  </p>
+<blockquote>
+<p><em>"The backend uses SQLAlchemy transactional consistency coupled with a centralized WebSocket broadcast manager that pushes fleet updates to all connected clients immediately."</em></p>
+</blockquote>
+<p><strong>Q8: Why did you choose Leaflet over Google Maps?</strong>  </p>
+<blockquote>
+<p><em>"Leaflet is open-source, lightweight, requires no API billing keys or quotas, renders without intrusive watermarks, and allows high-performance custom SVG markers and polyline rendering."</em></p>
+</blockquote>
+<p><strong>Q9: How do you evaluate the prediction accuracy of your system?</strong>  </p>
+<blockquote>
+<p><em>"We track Mean Absolute Error (MAE), comparing predicted arrival times against actual stop arrival timestamps recorded in the database."</em></p>
+</blockquote>
+<p><strong>Q10: Can CampusMove AI be scaled to other institutions?</strong>  </p>
+<blockquote>
+<p><em>"Yes. The architecture is completely modular. Updating the seed coordinates, stop definitions, and route polylines allows the platform to be deployed to any campus, airport, or municipal loop."</em></p>
+</blockquote>
+<p><strong>Q11: How does the On-Board QR Code Fare &amp; 24-Hour Penalty System work?</strong>  </p>
+<blockquote>
+<p><em>"Each shuttle features a dedicated scannable QR sticker. When a student boards, scanning the QR records a ₹20 base fare on their digital ledger with a 24-hour payment countdown. If unpaid within 24 hours, the system automatically applies an incremental daily penalty of ₹10 for each day overdue. Students can settle pending dues via UPI or Campus Card with instant receipt generation."</em></p>
+</blockquote>
+<p><strong>Q12: Why is shuttle live tracking dependent on driver registration and duty status?</strong>  </p>
+<blockquote>
+<p><em>"To eliminate ghost transit telemetry and mirror real-world transit operations, tracking only activates when an authenticated driver registers their commercial license credentials and marks themselves 'On-Duty'. If a driver signs off, the vehicle switches to standby mode, preventing misleading ETA broadcasts to waiting students."</em></p>
+</blockquote>
+<hr />
+<h2>10. QR Boarding Fare, 24-Hour Grace Window &amp; Daily Penalty Architecture</h2>
+<h3>10.1 Feature Workflow &amp; Specifications</h3>
+<ol>
+<li><strong>QR Scanning Entryway</strong>:</li>
+<li>Each shuttle vehicle (<code>Bus 101 MH Q-R-S-T</code>, <code>Bus 102 LH</code>, <code>Bus 103 SJT-TT</code>) possesses an authenticated QR identifier (<code>VIT-SHUTTLE-{vehicle_id}</code>).</li>
+<li>Students scan using the built-in animated viewfinder scanner in the web portal or mobile terminal.</li>
+<li><strong>Standard Fare Rule</strong>:</li>
+<li><strong>Original Cost</strong>: Exactly <strong>₹20 per turn</strong> of shuttle travel.</li>
+<li>Upon scanning, a ride ticket is generated with <code>status: "pending"</code> and <code>due_at: scan_timestamp + 24 hours</code>.</li>
+<li><strong>24-Hour Payment Deadline &amp; Daily Penalty Formula</strong>:
+   $$\text{Days Overdue} = \max\left(1, \left\lceil \frac{\text{Now} - \text{Due At}}{86400\,\text{seconds}} \right\rceil\right)$$
+   $$\text{Penalty Amount} = \text{Days Overdue} \times ₹10$$
+   $$\text{Total Amount Payable} = ₹20 + \text{Penalty Amount}$$</li>
+<li><strong>Presentation Demo Booster</strong>:</li>
+<li>A dedicated <strong>"Simulate +24h Overdue"</strong> utility enables evaluators to fast-forward time on any active ticket, witnessing the overdue badge and dynamic penalty increment immediately without waiting real days.</li>
+<li><strong>Integrated Payment Gateway</strong>:</li>
+<li>Supports UPI (Google Pay, PhonePe), Campus RFID SmartCards, and NetBanking with verifiable transaction references (<code>TXN-VIT-XXXXXX</code>).</li>
+</ol>
+<hr />
+<h2>11. Driver Registration Terminal &amp; Duty-Dependent Tracking</h2>
+<h3>11.1 Operational Security &amp; Tracking Architecture</h3>
+<ol>
+<li><strong>Driver Identity Registration</strong>:</li>
+<li>Drivers register with Full Name, Phone Number, Commercial Driving License (<code>TN-23-YYYY-XXXXXX</code>), and Assigned Shuttle Vehicle.</li>
+<li>Fast demo presets for 1-click evaluation: <strong>Rajesh Kumar (Bus 101)</strong>, <strong>Murugan V (Bus 102)</strong>, and <strong>Kavitha R (Bus 103)</strong>.</li>
+<li><strong>On-Duty vs. Off-Duty State Machine</strong>:</li>
+<li><strong>ON-DUTY</strong>: GPS coordinates are broadcast every tick over WebSockets; shuttle appears as <strong>"Live In Service"</strong> on the Leaflet map and arrivals board with driver name and badge.</li>
+<li><strong>OFF-DUTY</strong>: Telemetry transmission is paused; shuttle marker displays <strong>"⏸️ Awaiting Registered Driver"</strong>, preventing misleading arrival predictions.</li>
+</ol>
+<hr />
+<h2>12. V-TOP Institutional Integration &amp; Metro Single-Use Pass Validation</h2>
+<h3>12.1 Institutional "Zero-Escape" Account Dues Enforcement</h3>
+<p>To ensure 100% financial recovery without causing door bottlenecks during peak dispersal hours:
+1. <strong>Student Registration Binding</strong>: Every transaction is cryptographically linked to the student's unique university registration number (e.g. <code>22BCE1042 - Aarav Sharma</code>).
+2. <strong>Official V-TOP Receipts</strong>: Each ride generates an authenticated university fee receipt: <code>VTOP-TR-2026-XXXXXX</code>.
+3. <strong>Automated Exam Clearance Lock</strong>:
+   - If a student carries unpaid transit dues beyond the 24-hour grace window, the system automatically marks their V-TOP transit status as <code>PAYMENT_HOLD</code>.
+   - On the official V-TOP student portal, this holds the <strong>CAT / FAT Examination Hall Ticket download</strong> and semester course registration until dues are cleared.
+   - This provides <strong>100% escape-proof financial accountability</strong> without slowing down vehicle boarding.</p>
+<h3>12.2 Metro Single-Use Boarding Pass (Anti-Fraud Burn Security)</h3>
+<p>For high-security entry and capacity verification:
+1. <strong>Dynamic 1-Time QR Pass</strong>: Students tap <strong>"Issue Single-Use Boarding Pass"</strong> to receive an animated dynamic pass valid for exactly 30 minutes.
+2. <strong>Door Scanner Validation</strong>:
+   - The Driver Console includes a <strong>Single-Use Door Validator Terminal</strong>.
+   - Upon boarding, the driver validates the pass (<code>POST /api/payments/validate-single-use-pass</code>).
+3. <strong>Permanent Pass Burning (Anti-Screenshot Protection)</strong>:
+   - <strong>Scan 1 (Success)</strong>: Server marks <code>is_single_use_burned: true</code>, records validation timestamp, driver badge, and <strong>automatically increments the active trip occupancy by +1</strong>.
+   - <strong>Scan 2 (Fraud Detection)</strong>: If a student screenshots the pass and sends it to a friend, subsequent scans are immediately rejected with an audio/visual alarm:<br />
+<code>❌ REJECTED: Pass was ALREADY SCANNED at [Time]! Single entry exceeded.</code></p>
+</body>
+</html>

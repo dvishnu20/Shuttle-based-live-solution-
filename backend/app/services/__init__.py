@@ -1,0 +1,1 @@
+# CampusMove AI Services Package
